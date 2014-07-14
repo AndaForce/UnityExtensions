@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Assets.Scripts.Utility
     public class Grid : MonoBehaviour
     {
         [SerializeField] private Vector3 _vector;
+        [SerializeField] private bool _useSort;
         [SerializeField] private bool _moveNow;
 
         private void Update()
@@ -23,6 +25,12 @@ namespace Assets.Scripts.Utility
         {
             var childGameObjects =
                 gameObject.GetComponentsInChildren(typeof (Transform)).Where(a => a.transform != transform).ToList();
+            
+            if (_useSort)
+            {
+                childGameObjects.Sort((a, b) => a.name.CompareTo(b.name));
+            }
+
             for (int i = 0; i < childGameObjects.Count; i++)
             {
                 childGameObjects[i].transform.localPosition = _vector * i;
@@ -30,3 +38,5 @@ namespace Assets.Scripts.Utility
         }
     }
 }
+
+
