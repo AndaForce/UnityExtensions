@@ -1,37 +1,33 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 
-class SimpleAsyncTask: Editor 
+namespace Assets._UnityExtensions.TasksInEditorWithProgressBar
 {
-
-	public delegate void SimpleDelegate();
-	public delegate void CustomDelegate(object obj);
-
-
-
-	public static void DoTaskWithProgressBar(List<SimpleDelegate> delegateList) 
-	{
-		for (int i = 0; i < delegateList.Count; i++)
-		{
-			EditorUtility.DisplayProgressBar("Do Some Work", "wait a little", (float)i / ((float)delegateList.Count - 1f));
+    public class SimpleAsyncTask: Editor 
+    {
+        public static void DoTaskWithProgressBar(List<Action> delegateList) 
+        {
+            for (int i = 0; i < delegateList.Count; i++)
+            {
+                EditorUtility.DisplayProgressBar("Do Some Work", "wait a little", i / ((float)delegateList.Count - 1));
 			
-			delegateList[i]();
-		}
+                delegateList[i].Invoke();
+            }
 		
-		EditorUtility.ClearProgressBar();
-	}
+            EditorUtility.ClearProgressBar();
+        }
 
-	public static void DoTaskWithProgressBarWithParameters(List<CustomDelegate> delegateList, List<object> parametersList)
-	{
-		for (int i = 0; i < delegateList.Count; i++)
-		{
-			EditorUtility.DisplayProgressBar("Do Some Work", "wait a little", (float)i / ((float)delegateList.Count - 1f));
-			
-			delegateList[i](parametersList[i]);
-		}
+        public static void DoTaskWithProgressBarWithParameters<T>(Action<T>[] delegateList, T[] parametersList)
+        {
+            for (int i = 0; i < delegateList.Length; i++)
+            {
+                EditorUtility.DisplayProgressBar("Do Some Work", "wait a little", i / ((float)delegateList.Length - 1));
+
+                delegateList[i].Invoke(parametersList[i]);
+            }
 		
-		EditorUtility.ClearProgressBar();
-	}
+            EditorUtility.ClearProgressBar();
+        }
+    }
 }
