@@ -7,7 +7,7 @@ class SimpleAsyncTask: Editor
 {
 
 	public delegate void SimpleDelegate();
-	public delegate void CustomDelegate(Object obj);
+	public delegate void CustomDelegate(object obj);
 
 
 
@@ -23,7 +23,7 @@ class SimpleAsyncTask: Editor
 		EditorUtility.ClearProgressBar();
 	}
 
-	public static void DoTaskWithProgressBarWithParameters(List<CustomDelegate> delegateList, List<Object> parametersList)
+	public static void DoTaskWithProgressBarWithParameters(List<CustomDelegate> delegateList, List<object> parametersList)
 	{
 		for (int i = 0; i < delegateList.Count; i++)
 		{
