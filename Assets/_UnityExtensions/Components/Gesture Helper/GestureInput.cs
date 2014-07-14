@@ -9,8 +9,8 @@ public class GestureInput : MonoBehaviour
     [SerializeField] private float _verticalLimiterPercent = 5.0f;
     private Vector3 _anchorPosition;
     private static readonly List<GestureDirection> Gestures = new List<GestureDirection>();
-    private float _screenPercentHeight;
-    private float _screenPercentWidth;
+    private static float _screenPercentHeight;
+    private static float _screenPercentWidth;
 
     private static bool _isInitialized;
 
@@ -53,6 +53,29 @@ public class GestureInput : MonoBehaviour
         _verticalLimiterPercent = verticalPercent;
 
         CalcScreenPercentLimiters();
+    }
+
+    public static GestureDirection DetermineGesture(Vector3 from, Vector3 to, float limiterPercent)
+    {
+        var result = GestureDirection.None;
+        if ((from.y - to.y) >= _screenPercentHeight)
+        {
+            result = GestureDirection.Down;
+        }
+        else if ((from.y - to.y) <= -_screenPercentHeight)
+        {
+            result = GestureDirection.Up;
+        }
+        else if ((from.x - to.x) >= _screenPercentWidth)
+        {
+            result = GestureDirection.Right;
+        }
+        else if ((from.x - to.x) <= -_screenPercentWidth)
+        {
+            result = GestureDirection.Left;
+        }
+
+        return result;
     }
 
     #endregion
