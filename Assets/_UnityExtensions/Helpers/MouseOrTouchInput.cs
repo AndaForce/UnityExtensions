@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.MouseOrTouchInput
+namespace Assets._UnityExtensions.Helpers
 {
     public static class MouseOrTouchInput
     {
