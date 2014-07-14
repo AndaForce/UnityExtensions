@@ -1,15 +1,26 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class SomeScript : MonoBehaviour {
+namespace Assets.Scripts
+{
+    public class SomeScript : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+        private void OnGUI()
+        {
+            if (GUILayout.Button("PRESS ME"))
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    GestureInput.CreateInputObject();
+                }
+            }
+        }
+
+        private void Update()
+        {
+            if (GestureInput.IsGesture(GestureDirection.Down)) Debug.Log("Down");
+            if (GestureInput.IsGesture(GestureDirection.Left)) Debug.Log("Left");
+            if (GestureInput.IsGesture(GestureDirection.Up)) Debug.Log("Up");
+            if (GestureInput.IsGesture(GestureDirection.Right)) Debug.Log("Right");
+        }
+    }
 }
