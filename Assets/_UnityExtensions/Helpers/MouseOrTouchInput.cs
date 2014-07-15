@@ -14,8 +14,9 @@ namespace Assets._UnityExtensions.Helpers
             return Input.GetMouseButtonDown(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
-#endif
+#else
             return false;
+#endif
         }
 
         /// <summary>
@@ -30,8 +31,9 @@ namespace Assets._UnityExtensions.Helpers
             // TODO Проверить работоспособность Any() и вернуть первый вариант в случае ошибки
             //return Input.touchCount > 0 && Input.touches.Where(a => a.phase == TouchPhase.Began).ToList().Count > 0;
             return Input.touches.Any(a => a.phase == TouchPhase.Began);
-#endif
+#else
             return false;
+#endif
         }
 
         /// <summary>
@@ -44,8 +46,9 @@ namespace Assets._UnityExtensions.Helpers
             return Input.GetMouseButtonUp(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended;
-#endif
+#else
             return false;
+#endif
         }
 
         /// <summary>
@@ -58,8 +61,9 @@ namespace Assets._UnityExtensions.Helpers
             return Input.GetMouseButtonUp(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0 && Input.touches.Where(a => a.phase == TouchPhase.Ended).ToList().Count > 0;
-#endif
+#else
             return false;
+#endif
         }
 
         /// <summary>
@@ -72,8 +76,9 @@ namespace Assets._UnityExtensions.Helpers
             return !Input.GetMouseButton(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount == 0; 
-#endif
+#else
             return false;
+#endif
         }
 
         /// <summary>
@@ -86,8 +91,9 @@ namespace Assets._UnityExtensions.Helpers
             return Input.GetMouseButton(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0;
-#endif
+#else
             return false;
+#endif
         }
 
         /// <summary>
@@ -102,8 +108,9 @@ namespace Assets._UnityExtensions.Helpers
             return Input.touchCount > 0
                 ? new Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y)
                 : Vector3.zero;
-#endif
+#else
             return Vector2.zero;
+#endif
         }
     }
 }
