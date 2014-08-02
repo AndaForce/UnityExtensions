@@ -10,7 +10,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static bool IsFirstDown()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return Input.GetMouseButtonDown(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began;
@@ -25,7 +25,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static bool IsFirstDownAny()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return Input.GetMouseButtonDown(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             // TODO Проверить работоспособность Any() и вернуть первый вариант в случае ошибки
@@ -42,7 +42,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static bool IsUp()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return Input.GetMouseButtonUp(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended;
@@ -57,7 +57,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static bool IsUpAny()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return Input.GetMouseButtonUp(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0 && Input.touches.Where(a => a.phase == TouchPhase.Ended).ToList().Count > 0;
@@ -72,7 +72,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static bool IsNoTouches()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return !Input.GetMouseButton(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount == 0; 
@@ -87,7 +87,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static bool IsDown()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return Input.GetMouseButton(0);
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0;
@@ -102,7 +102,7 @@ namespace Assets.Plugins.Helpers
         /// <returns></returns>
         public static Vector3 GetCursorPosition()
         {
-#if UNITY_STANDALONE
+#if UNITY_STANDALONE || UNITY_EDITOR
             return Input.mousePosition;
 #elif UNITY_IPHONE || UNITY_ANDROID
             return Input.touchCount > 0
