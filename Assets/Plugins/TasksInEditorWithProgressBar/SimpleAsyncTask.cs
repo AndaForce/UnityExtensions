@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace Assets._UnityExtensions.TasksInEditorWithProgressBar
+namespace Assets.Plugins.TasksInEditorWithProgressBar
 {
     public class SimpleAsyncTask: Editor 
     {

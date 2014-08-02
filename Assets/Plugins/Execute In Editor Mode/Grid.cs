@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 
-namespace Assets.Scripts.Utility
+namespace Assets.Plugins
 {
     [ExecuteInEditMode]
     public class Grid : MonoBehaviour

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets.Plugins
+namespace Assets.Plugins.Helpers
 {
     public class GameObjectExtended
     {

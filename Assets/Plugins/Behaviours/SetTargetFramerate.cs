@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Assets._UnityExtensions.Behaviours
+namespace Assets.Plugins.Behaviours
 {
     public class SetTargetFramerate : MonoBehaviour
     {

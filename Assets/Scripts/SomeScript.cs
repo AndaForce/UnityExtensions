@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Plugins.Components;
+using UnityEngine;
 
 namespace Assets.Scripts
 {

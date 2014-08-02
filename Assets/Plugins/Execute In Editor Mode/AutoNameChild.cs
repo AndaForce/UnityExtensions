@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Utility
+namespace Assets.Plugins
 {
     [ExecuteInEditMode]
     public class AutoNameChild : MonoBehaviour

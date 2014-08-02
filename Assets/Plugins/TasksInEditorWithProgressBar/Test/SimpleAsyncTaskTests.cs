@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets._UnityExtensions.TasksInEditorWithProgressBar.Test
+namespace Assets.Plugins.TasksInEditorWithProgressBar.Test
 {
     public class SimpleAsyncTaskTests : MonoBehaviour {
 

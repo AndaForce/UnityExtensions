@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets._UnityExtensions.Helpers;
+using Assets.Plugins.Helpers;
 using UnityEngine;
 
-namespace Assets.Scripts.Utility
+namespace Assets.Plugins.Components
 {
     public class FreeScrollWithTweak : MonoBehaviour
     {
@@ -12,7 +12,7 @@ namespace Assets.Scripts.Utility
         [SerializeField] protected List<float> PositionSteps = new List<float>();
         [SerializeField] private float _userScrollSpeedMultiplier = 0.5f;
         [SerializeField] private float _tweakSpeed = 2.0f;
-        [SerializeField] private iTween.EaseType _easeType = iTween.EaseType.easeOutBack;
+        [SerializeField] private iTween.iTween.EaseType _easeType = iTween.iTween.EaseType.easeOutBack;
         [SerializeField] private float _timeThresholdForQuickSwap = 0.3f;
         [SerializeField] private float _gestureThresholdPercent = 5.0f;
         public Action<float> OnMove;
@@ -55,7 +55,7 @@ namespace Assets.Scripts.Utility
                 _isDrag = true;
                 _elapsedTime = 0;
 
-                iTween.Stop(gameObject);
+                iTween.iTween.Stop(gameObject);
             }
 
             // Up
@@ -107,9 +107,9 @@ namespace Assets.Scripts.Utility
             //var closestPoint = PositionSteps.FindFirstClosest(currentValue);
             var closestPoint = FindClosestValuePair(PositionSteps, CameraTransform.localPosition.x).Value;
 
-            iTween.Stop(gameObject);
-            iTween.ValueTo(gameObject,
-                iTween.Hash(
+            iTween.iTween.Stop(gameObject);
+            iTween.iTween.ValueTo(gameObject,
+                iTween.iTween.Hash(
                     "from", CameraTransform.localPosition.x,
                     "to", closestPoint,
                     "easetype", _easeType,
@@ -120,9 +120,9 @@ namespace Assets.Scripts.Utility
 
         private void TweakPositionToId(int positionId)
         {
-            iTween.Stop(gameObject);
-            iTween.ValueTo(gameObject,
-                iTween.Hash(
+            iTween.iTween.Stop(gameObject);
+            iTween.iTween.ValueTo(gameObject,
+                iTween.iTween.Hash(
                     "from", CameraTransform.localPosition.x,
                     "to", PositionSteps[positionId],
                     "easetype", _easeType,
