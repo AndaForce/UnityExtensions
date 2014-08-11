@@ -9,12 +9,13 @@ namespace Assets.Plugins.Components
     {
         [SerializeField] private float _horizontalLimiterPercent = 5.0f;
         [SerializeField] private float _verticalLimiterPercent = 5.0f;
+        private readonly List<GestureDirection> _gestures = new List<GestureDirection>();
         private Vector3 _anchorPosition;
-        private static readonly List<GestureDirection> Gestures = new List<GestureDirection>();
-        private static float _screenPercentHeight;
-        private static float _screenPercentWidth;
+        private float _screenPercentHeight;
+        private float _screenPercentWidth;
 
         private static bool _isInitialized;
+        private static GestureInput _instance;
 
         #region GameCycle
 
@@ -46,33 +47,33 @@ namespace Assets.Plugins.Components
 
         public static bool IsGesture(GestureDirection gesture)
         {
-            return Gestures.Contains(gesture);
+            return _instance._gestures.Contains(gesture);
         }
 
-        public void SetupLimiters(float horizontalPercent, float verticalPercent)
+        public static void SetupLimiters(float horizontalPercent, float verticalPercent)
         {
-            _horizontalLimiterPercent = horizontalPercent;
-            _verticalLimiterPercent = verticalPercent;
+            _instance._horizontalLimiterPercent = horizontalPercent;
+            _instance._verticalLimiterPercent = verticalPercent;
 
-            CalcScreenPercentLimiters();
+            _instance.CalcScreenPercentLimiters();
         }
 
         public static GestureDirection DetermineGesture(Vector3 from, Vector3 to, float limiterPercent)
         {
             var result = GestureDirection.None;
-            if ((from.y - to.y) >= _screenPercentHeight)
+            if ((from.y - to.y) >= _instance._screenPercentHeight)
             {
                 result = GestureDirection.Down;
             }
-            else if ((from.y - to.y) <= -_screenPercentHeight)
+            else if ((from.y - to.y) <= -_instance._screenPercentHeight)
             {
                 result = GestureDirection.Up;
             }
-            else if ((from.x - to.x) >= _screenPercentWidth)
+            else if ((from.x - to.x) >= _instance._screenPercentWidth)
             {
                 result = GestureDirection.Right;
             }
-            else if ((from.x - to.x) <= -_screenPercentWidth)
+            else if ((from.x - to.x) <= -_instance._screenPercentWidth)
             {
                 result = GestureDirection.Left;
             }
@@ -89,6 +90,8 @@ namespace Assets.Plugins.Components
             if (!_isInitialized)
             {
                 _isInitialized = true;
+                _instance = this;
+
                 DontDestroyOnLoad(gameObject);
             }
             else
@@ -105,7 +108,7 @@ namespace Assets.Plugins.Components
 
         private void UpdateGestures()
         {
-            Gestures.Clear();
+            _gestures.Clear();
 
             if (MouseOrTouchInput.IsFirstDown())
             {
@@ -118,33 +121,33 @@ namespace Assets.Plugins.Components
                     // Vertical
                     if ((_anchorPosition.y - MouseOrTouchInput.GetCursorPosition().y) >= _screenPercentHeight)
                     {
-                        Gestures.Add(GestureDirection.Down);
+                        _gestures.Add(GestureDirection.Down);
                     }
                     else if ((_anchorPosition.y - MouseOrTouchInput.GetCursorPosition().y) <= -_screenPercentHeight)
                     {
-                        Gestures.Add(GestureDirection.Up);
+                        _gestures.Add(GestureDirection.Up);
                     }
 
                     // Horizontal
                     if ((_anchorPosition.x - MouseOrTouchInput.GetCursorPosition().x) >= _screenPercentWidth)
                     {
-                        Gestures.Add(GestureDirection.Left);
+                        _gestures.Add(GestureDirection.Left);
                     }
                     else if ((_anchorPosition.x - MouseOrTouchInput.GetCursorPosition().x) <= -_screenPercentWidth)
                     {
-                        Gestures.Add(GestureDirection.Right);
+                        _gestures.Add(GestureDirection.Right);
                     }
 
-                    if (Gestures.Any())
+                    if (_gestures.Any())
                     {
                         _anchorPosition = MouseOrTouchInput.GetCursorPosition();
                     }
                 }
             }
 
-            if (!Gestures.Any())
+            if (!_gestures.Any())
             {
-                Gestures.Add(GestureDirection.None);
+                _gestures.Add(GestureDirection.None);
             }
         }
 
