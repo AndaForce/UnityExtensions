@@ -55,7 +55,7 @@ namespace Assets.Plugins.Helpers
             _loggerLayer = _loggerLayers.FirstOrDefault(a => a.StringIdentified == layer);
             if (_loggerLayer != null)
             {
-                _loggerLayer.SetEnabled(enabled);
+                _loggerLayer.IsEnabled = enabled;
             }
         }
 
@@ -67,7 +67,7 @@ namespace Assets.Plugins.Helpers
         private class LoggerLayer
         {
             public readonly String StringIdentified;
-            public bool IsEnabled { get; private set; }
+            public bool IsEnabled;
             private readonly bool _useLayerMark;
             private readonly Action<String> _logFunction;
 
@@ -90,11 +90,6 @@ namespace Assets.Plugins.Helpers
                     _useLayerMark
                         ? String.Format("[{0}]: {1}", StringIdentified, message)
                         : message);
-            }
-
-            public void SetEnabled(bool enabled)
-            {
-                IsEnabled = enabled;
             }
         }
     }
