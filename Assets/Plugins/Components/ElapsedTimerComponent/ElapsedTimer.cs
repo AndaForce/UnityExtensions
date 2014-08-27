@@ -39,9 +39,10 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
                     identifier));
         }
 
+
         public static void RegisterNewTask(String identifier, float timerInterval, Action timedAction)
         {
-            RegisterNewTask(identifier, new ElapsedTimerTask(timerInterval, timedAction));
+            RegisterNewTask(identifier, new ElapsedTimerTask(timerInterval, timedAction, 0.0f));
         }
 
         public static void ChangeTaskActivity(String identifier, bool newActiveState)
@@ -143,15 +144,17 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
     public class ElapsedTimerTask
     {
         public bool IsActive = true;
+        public float DelayTime { get; private set; }
         public float ElapsedTime { get; private set; }
         public float TimeInterval;
         public Action TimedAction;
         public bool IsAlive { get; protected set; }
 
-        public ElapsedTimerTask(float timeInterval, Action timedAction)
+        public ElapsedTimerTask(float timeInterval, Action timedAction, float delayTime)
         {
             TimeInterval = timeInterval;
             TimedAction = timedAction;
+            DelayTime = delayTime;
 
             IsAlive = true;
         }
@@ -159,18 +162,25 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
         public virtual bool UpdateTime(float delthaTime)
         {
             ElapsedTime += delthaTime;
-            if (ElapsedTime >= TimeInterval)
+            if ((ElapsedTime >= DelayTime && DelayTime != 0.0f)
+                || (ElapsedTime >= TimeInterval && DelayTime == 0.0f))
             {
-                ElapsedTime = 0;
-                if (TimedAction != null)
-                {
-                    TimedAction.Invoke();
+                ElapsedTime = 0.0f;
+                DelayTime = 0.0f;
 
-                    return true;
-                }
+                InvokeAction();
+                return true;
             }
 
             return false;
+        }
+
+        private void InvokeAction()
+        {
+            if (TimedAction != null)
+            {
+                TimedAction.Invoke();
+            }
         }
     }
 
@@ -179,7 +189,8 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
         private int _restrictionTargetCount;
         private int _fireCount;
 
-        public RestrictedTimerTask(float timeInterval, Action timedAction, int restrictionTargetCount) : base(timeInterval, timedAction)
+        public RestrictedTimerTask(float timeInterval, Action timedAction, int restrictionTargetCount, float delay)
+            : base(timeInterval, timedAction, delay)
         {
             _restrictionTargetCount = restrictionTargetCount;
         }
