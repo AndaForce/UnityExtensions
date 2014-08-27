@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Assets.Plugins.Components.ElapsedTimerComponent.Test
@@ -12,18 +11,12 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent.Test
 
         private void Start()
         {
-            ElapsedTimer.RegisterNewTask("LogValue", 1.0f, LogValue);
+            // Обычное бесконечное задание
             ElapsedTimer.RegisterNewTask("MeshTimeLog", 1.0f,
                 () => _meshLog.text = DateTime.Now.ToLongTimeString());
 
-            StartCoroutine(SwitchOffTimer());
-        }
-
-        private IEnumerator SwitchOffTimer()
-        {
-            yield return new WaitForSeconds(2.0f);
-
-            ElapsedTimer.RemoveTask("LogValue");
+            // Задание, отменяющееся после 10 срабатываний
+            ElapsedTimer.RegisterNewTask("Restricted", new RestrictedTimerTask(1.0f, LogValue, 10));
         }
 
         private void LogValue()
