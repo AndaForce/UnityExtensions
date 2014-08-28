@@ -16,11 +16,10 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent.Test
                 () => _meshLog.text = DateTime.Now.ToLongTimeString());
 
             // Задание, отменяющееся после 10 срабатываний
-            ElapsedTimer.RegisterNewTask("Restricted", new RestrictedTimerTask(1.0f, LogValue, 10, 0.0f));
+            ElapsedTimer.RegisterNewTask("Restricted", 1.0f, LogValue, 0.0f, 10);
 
-            // Задание, срабатывающее 2 раза через 5 секунд
-            ElapsedTimer.RegisterNewTask("Delayed",
-                new RestrictedTimerTask(1.0f, () => Debug.Log("Delayed task"), 3, 5.0f));
+            // Задание, срабатывающее 3 раза через 5 секунд
+            ElapsedTimer.RegisterNewTask("Delayed", 1.0f, () => Debug.Log("Delayed task"), 5.0f, 3);
         }
 
         private void LogValue()

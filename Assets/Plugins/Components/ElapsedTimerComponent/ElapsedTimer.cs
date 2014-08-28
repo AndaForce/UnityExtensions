@@ -13,7 +13,7 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
 
         #region Public methods
 
-        public static void SetEnabled(bool enableState)
+        public static void SetTimerEnabled(bool enableState)
         {
             GetInstance()._isEnabled = enableState;
         }
@@ -39,10 +39,15 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
                     identifier));
         }
 
-
         public static void RegisterNewTask(String identifier, float timerInterval, Action timedAction)
         {
-            RegisterNewTask(identifier, new ElapsedTimerTask(timerInterval, timedAction, 0.0f));
+            RegisterNewTask(identifier, new ElapsedTimerTask(timerInterval, timedAction, 0.0f, 0));
+        }
+
+        public static void RegisterNewTask(String identifier, float timerInterval, Action timedAction, float delay,
+            int firingRestriction)
+        {
+            RegisterNewTask(identifier, new ElapsedTimerTask(timerInterval, timedAction, delay, firingRestriction));
         }
 
         public static void ChangeTaskActivity(String identifier, bool newActiveState)
@@ -78,6 +83,13 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
                         "[ElapsedTimer] Timed task removed: [{0}]",
                         identifier));
             }
+        }
+
+        public static ElapsedTimerTask GetTask(String identifier)
+        {
+            return GetInstance().Contains(identifier) 
+                ? GetInstance()._tasks[identifier] 
+                : null;
         }
 
         #endregion
@@ -135,7 +147,10 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
                 }
             }
 
-            _tasks = _tasks.Where(a => a.Value.IsAlive).ToDictionary(a => a.Key, b => b.Value);
+            if (_tasks.Any(a => !a.Value.IsAlive))
+            {
+                _tasks = _tasks.Where(a => a.Value.IsAlive).ToDictionary(a => a.Key, b => b.Value);
+            }
         }
 
         #endregion
@@ -144,20 +159,34 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
     public class ElapsedTimerTask
     {
         public bool IsActive = true;
-        public float DelayTime { get; private set; }
-        public float ElapsedTime { get; private set; }
         public float TimeInterval;
         public Action TimedAction;
-        public bool IsAlive { get; protected set; }
+        public float DelayTime { get; private set; }
+        public float ElapsedTime { get; private set; }
+        public bool IsAlive { get; private set; }
+        public int FiringRestrictionCount { get; private set; }
+        public int FiresCount { get; private set; }
 
-        public ElapsedTimerTask(float timeInterval, Action timedAction, float delayTime)
+        public ElapsedTimerTask(float timeInterval, Action timedAction, float delayTime, int restrictionCountCount)
         {
             TimeInterval = timeInterval;
             TimedAction = timedAction;
             DelayTime = delayTime;
+            FiringRestrictionCount = restrictionCountCount;
 
             IsAlive = true;
         }
+
+        public ElapsedTimerTask(float timeInterval, Action timedAction)
+        {
+            TimeInterval = timeInterval;
+            TimedAction = timedAction;
+            DelayTime = 0.0f;
+            FiringRestrictionCount = 0;
+
+            IsAlive = true;
+        }
+
 
         public virtual bool UpdateTime(float delthaTime)
         {
@@ -167,6 +196,12 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
             {
                 ElapsedTime = 0.0f;
                 DelayTime = 0.0f;
+
+                FiresCount += 1;
+                if (FiresCount >= FiringRestrictionCount && FiringRestrictionCount != 0)
+                {
+                    IsAlive = false;
+                }
 
                 InvokeAction();
                 return true;
@@ -181,34 +216,6 @@ namespace Assets.Plugins.Components.ElapsedTimerComponent
             {
                 TimedAction.Invoke();
             }
-        }
-    }
-
-    public class RestrictedTimerTask : ElapsedTimerTask
-    {
-        private int _restrictionTargetCount;
-        private int _fireCount;
-
-        public RestrictedTimerTask(float timeInterval, Action timedAction, int restrictionTargetCount, float delay)
-            : base(timeInterval, timedAction, delay)
-        {
-            _restrictionTargetCount = restrictionTargetCount;
-        }
-
-        public override bool UpdateTime(float delthaTime)
-        {
-            if (base.UpdateTime(delthaTime))
-            {
-                _fireCount += 1;
-                if (_fireCount >= _restrictionTargetCount)
-                {
-                    IsAlive = false;
-                }
-
-                return true;
-            }
-
-            return false;
         }
     }
 
