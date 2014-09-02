@@ -64,7 +64,6 @@ namespace Assets.Plugins.Helpers
             var cachedImageData = TextureCacheData.RestoreFromDisk(imagePath);
             if (cachedImageData != null)
             {
-
                 var image = new Texture2D(cachedImageData.TextureWidth, cachedImageData.TextureHeight);
                 image.LoadImage(Convert.FromBase64String(cachedImageData.Base64String));
 
@@ -80,7 +79,7 @@ namespace Assets.Plugins.Helpers
 
         private static String GetImagePath(String cacheKey)
         {
-            var imageDirectoryPath = Path.Combine(Application.persistentDataPath, "OtherAppsCache");
+            var imageDirectoryPath = Path.Combine(Application.persistentDataPath, "DefaultCache");
 
             if (!Directory.Exists(imageDirectoryPath))
             {
