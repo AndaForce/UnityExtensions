@@ -7,22 +7,27 @@ namespace Assets.Plugins.Helpers
 {
     public static class PersistentTextureCacher
     {
-        private static Dictionary<String, Texture2D> _textureCache = new Dictionary<string, Texture2D>();
+        private static readonly Dictionary<String, Texture2D> TextureCache = new Dictionary<string, Texture2D>();
         public static bool IsLoggerEnabled = true;
+        private const String DefaultCacheFolder = "Cache";
 
-        public static void SaveElement(String cacheKey, Texture2D texture)
+        #region Public Methods
+
+        public static void SaveElement(String cacheKey, Texture2D texture, String folderName = "")
         {
-            if (_textureCache.ContainsKey(cacheKey))
+            var usedCacheKey = String.Format("{0}_{1}", folderName, cacheKey);
+
+            if (TextureCache.ContainsKey(usedCacheKey))
             {
-                LogEvent(String.Format("Image with this cache key [{0}] is already cached, ignoring", cacheKey));
+                LogEvent(String.Format("Image with this cache key [{0}] is already cached, ignoring", usedCacheKey));
                 return;
             }
 
-            var imagePath = GetImagePath(cacheKey);
+            var imagePath = GetImagePath(usedCacheKey, folderName);
 
             if (File.Exists(imagePath))
             {
-                LogEvent(String.Format("Image with this cache key [{0}] is found on disk, ignoring", cacheKey));
+                LogEvent(String.Format("Image with this cache key [{0}] is found on disk, ignoring", usedCacheKey));
                 return;
             }
 
@@ -37,7 +42,7 @@ namespace Assets.Plugins.Helpers
                     },
                     imagePath);
 
-                _textureCache.Add(cacheKey, texture);
+                TextureCache.Add(usedCacheKey, texture);
             }
             catch (Exception e)
             {
@@ -45,20 +50,21 @@ namespace Assets.Plugins.Helpers
             }
         }
 
-        public static Texture2D GetTexture(String cacheKey)
+        public static Texture2D GetTexture(String cacheKey, String folderName = "")
         {
-            var imagePath = GetImagePath(cacheKey);
+            var usedCacheKey = String.Format("{0}_{1}", folderName, cacheKey);
+            var imagePath = GetImagePath(usedCacheKey, folderName);
 
             if (!File.Exists(imagePath))
             {
-                LogEvent(String.Format("Image with cache key [{0}] is not found in cache", cacheKey));
+                LogEvent(String.Format("Image with cache key [{0}] is not found in cache", usedCacheKey));
                 return null;
             }
 
-            if (_textureCache.ContainsKey(cacheKey))
+            if (TextureCache.ContainsKey(usedCacheKey))
             {
-                LogEvent(String.Format("Image with cache key [{0}] is found", cacheKey));
-                return _textureCache[cacheKey];
+                LogEvent(String.Format("Image with cache key [{0}] is found", usedCacheKey));
+                return TextureCache[usedCacheKey];
             }
 
             var cachedImageData = TextureCacheData.RestoreFromDisk(imagePath);
@@ -67,9 +73,9 @@ namespace Assets.Plugins.Helpers
                 var image = new Texture2D(cachedImageData.TextureWidth, cachedImageData.TextureHeight);
                 image.LoadImage(Convert.FromBase64String(cachedImageData.Base64String));
 
-                _textureCache.Add(cacheKey, image);
+                TextureCache.Add(usedCacheKey, image);
 
-                LogEvent(String.Format("Image with cache key [{0}] is load", cacheKey));
+                LogEvent(String.Format("Image with cache key [{0}] is load", usedCacheKey));
 
                 return image;
             }
@@ -77,16 +83,53 @@ namespace Assets.Plugins.Helpers
             return null;
         }
 
-        private static String GetImagePath(String cacheKey)
+        public static void WipeCache()
         {
-            var imageDirectoryPath = Path.Combine(Application.persistentDataPath, "DefaultCache");
-
-            if (!Directory.Exists(imageDirectoryPath))
+            try
             {
-                Directory.CreateDirectory(imageDirectoryPath);
+                foreach (var cacheRecord in TextureCache)
+                {
+                    UnityEngine.Object.Destroy(cacheRecord.Value);
+                }
+                TextureCache.Clear();
+
+                var files = Directory.GetFiles(Path.Combine(Application.persistentDataPath, DefaultCacheFolder));
+                foreach (var file in files)
+                {
+                    File.Delete(file);
+                }
+
+                LogEvent("Cache is cleared");
+            }
+            catch (Exception e)
+            {
+                LogEvent(String.Format("Exception during cache clearing: {0}", e));
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static String GetImagePath(String cacheKey, String directory)
+        {
+            var cacheFolderPath = Path.Combine(Application.persistentDataPath, DefaultCacheFolder);
+
+            if (!Directory.Exists(cacheFolderPath))
+            {
+                Directory.CreateDirectory(cacheFolderPath);
             }
 
-            var imagePath = Path.Combine(imageDirectoryPath, String.Format("{0}.png", cacheKey));
+            var concretecacheFolderPath = directory != ""
+                ? Path.Combine(cacheFolderPath, directory)
+                : cacheFolderPath;
+
+            if (!Directory.Exists(concretecacheFolderPath))
+            {
+                Directory.CreateDirectory(concretecacheFolderPath);
+            }
+
+            var imagePath = Path.Combine(concretecacheFolderPath, String.Format("{0}.png", cacheKey));
 
             return imagePath;
         }
@@ -99,7 +142,11 @@ namespace Assets.Plugins.Helpers
             }
         }
 
-        private class TextureCacheData
+        #endregion
+
+        #region Private class
+
+        private sealed class TextureCacheData
         {
             public String Base64String;
             public int TextureWidth;
@@ -148,5 +195,7 @@ namespace Assets.Plugins.Helpers
                 }
             }
         }
+
+        #endregion
     }
 }
